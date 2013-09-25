@@ -1,0 +1,19 @@
+#selectorgadgetplus_sidebar {
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 200px;
+    background: #666;
+    z-index: 999999;
+}
+
+#selectorgadgetplus_sidebar.left {
+    right: auto;
+    left: 0;
+}
+
+#selectorgadgetplus_sidebar input[type="button"] {
+    font-size: 9px;
+    outline: 0;
+}
