@@ -1,11 +1,20 @@
 // Copyright (c) 2008, 2009 Andrew Cantino
 // Copyright (c) 2008, 2009 Kyle Maxwell
 
-function importJS(src, look_for, onload) {
-  var s = document.createElement('script');
-  s.setAttribute('type', 'text/javascript');
-  s.setAttribute('src', src);
-  if (onload) wait_for_script_load(look_for, onload);
+function importJS(src, callback)
+{
+  var s, r, t;
+  r = false;
+  s = document.createElement('script');
+  s.type = 'text/javascript';
+  s.src = src;
+  s.onload = s.onreadystatechange = function() {
+    if ( !r && (!this.readyState || this.readyState == 'complete') )
+    {
+      r = true;
+      callback();
+    }
+  };
   var head = document.getElementsByTagName('head')[0];
   if (head) {
     head.appendChild(s);
@@ -38,18 +47,23 @@ function wait_for_script_load(look_for, callback) {
   }, 50);
 }
 
-(function(){
-  importCSS('https://dv0akt2986vzh.cloudfront.net/stable/lib/selectorgadget.css');
+var load = function(){
+  importCSS('http://localhost:8000/selectorgadget/selectorgadget.css');
   importCSS('http://localhost:8000/selectorgadget-plus.css');
-  importJS('http://code.jquery.com/jquery-2.0.3.min.js', 'jQuery', function() { // Load everything else when it is done.
+  importJS('http://ajax.googleapis.com/ajax/libs/jquery/1.3.1/jquery.min.js', function() { // Load everything else when it is done.
     jQuerySG = jQuery.noConflict();
-    importJS('http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js', '_', function() {
-        importJS('https://dv0akt2986vzh.cloudfront.net/stable/vendor/diff/diff_match_patch.js', 'diff_match_patch', function() {
-          importJS('http://localhost:8000/selectorgadget/dom.js', 'DomPredictionHelper', function() {
-            importJS('http://localhost:8000/selectorgadget/core.js', 'SelectorGadget', function() {
-                  importJS('http://localhost:8000/selectorgadget-plus.js', 'SelectorGadgetPlus', function() {
-                      importJS('http://localhost:8000/templates.js', 'SelectorGadgetPlus.templates', function() {
-                          SelectorGadgetPlus.toggle();
+    var jQuery_ = window.jQuery;
+    // remove jQuery from window to let angular use built-int jqLite
+    delete window.jQuery;
+    importJS('http://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.2/angular.min.js', function() {
+        window.jQuery = jQuery_;
+        importJS('https://dv0akt2986vzh.cloudfront.net/stable/vendor/diff/diff_match_patch.js', function() {
+          importJS('http://localhost:8000/selectorgadget/dom.js', function() {
+            importJS('http://localhost:8000/selectorgadget/core.js', function() {
+                  importJS('http://localhost:8000/selectorgadget-plus.js', function() {
+                      importJS('http://localhost:8000/templates.js', function() {
+                          jQuerySG('.selector_gadget_loading').remove();
+                          SelectorGadgetPlus.enable();
                       }) 
                   }) 
             });
@@ -57,4 +71,10 @@ function wait_for_script_load(look_for, callback) {
         });
     });
   });
-})();
+};
+
+if (typeof(jQuery) != 'undefined') {
+    jQuery(load)
+} else {
+    load()
+}
