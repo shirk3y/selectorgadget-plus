@@ -1,0 +1,24 @@
+#selectorgadgetplus {
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 200px;
+    z-index: 9999999;
+}
+
+#selectorgadgetplus.left {
+    right: auto;
+    left: 0;
+}
+
+.selectorgadgetplus_highlight {
+    position: absolute;
+    border: 4px dotted rgb(0, 68, 204);
+    z-index: 9999998;
+}
+
+.selectorgadgetplus_selected {
+  background-color: rgb(152, 176, 224) !important;
+  background-image: none !important;
+}
