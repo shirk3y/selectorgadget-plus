@@ -4,21 +4,28 @@ window.SelectorGadgetPlus = SelectorGadgetPlus = (function(window, $, SelectorGa
 
     function SelectorGadgetPlus() {}
 
+    SelectorGadgetPlus.selectorGadget = null;
+
     SelectorGadgetPlus.customCss = null;
 
     SelectorGadgetPlus.updateCssFieldInterval = null;
 
-    SelectorGadgetPlus.enable = function() {
+    SelectorGadgetPlus.offsetBeforeHighlight = 0;
+
+    SelectorGadgetPlus.enable = function(iframeUrl) {
         var self = this;
         if(!window.selectorGadgetPlus) {
             this.iframe = $('<iframe>')
                 .attr('id', 'selectorgadgetplus')
                 .attr('class', 'selectorgadget_ignore')
-                .attr('src', 'http://localhost:8000/sgplus-iframe.html')
+                .attr('src', iframeUrl)
                 .appendTo('body');
             this.highlightFrame = $('<div>')
                 .attr('class', 'selectorgadgetplus_highlight')
                 .hide()
+                .appendTo('body');
+            this.overlay = $('<div>')
+                .attr('class', 'selectorgadgetplus_overlay')
                 .appendTo('body');
             this.leaf = 'html';
             this.attr = '';
@@ -30,6 +37,17 @@ window.SelectorGadgetPlus = SelectorGadgetPlus = (function(window, $, SelectorGa
         }
     }
 
+    SelectorGadgetPlus.disable = function() {
+        this.disableSelectorGadget();
+        if(window.selectorGadgetPlus) {
+            window.removeEventListener('message', this.boundIframeListener, false); 
+            this.iframe.remove();
+            this.highlightFrame.remove();
+            this.overlay.remove();
+            window.selectorGadgetPlus = null;
+        }
+    }
+
     SelectorGadgetPlus.iframeListener = function(e) {
         var methodParts = e.data[0].split('sgplus_');
         if(methodParts[0] == '') {
@@ -38,19 +56,13 @@ window.SelectorGadgetPlus = SelectorGadgetPlus = (function(window, $, SelectorGa
         }
     }
 
-    SelectorGadgetPlus.disable = function() {
-        this.disableSelectorGadget();
-        if(window.selectorGadgetPlus) {
-            window.removeEventListener('message', this.boundIframeListener, false); 
-            this.iframe.remove();
-            window.selectorGadgetPlus = null;
-        }
-    }
-
     SelectorGadgetPlus.enableSelectorGadget = function() {
         var self = this;
         this.disableSelectorGadget();
         if(!this.selectorGadget) {
+            this.overlay.show().animate({'opacity': 0}, 1000, function() {
+                $(this).hide();
+            });
             SelectorGadget.toggle();
             this.selectorGadget = window.selector_gadget;
             this.selectorGadget.sg_div.attr('style', 'display: none !important');
@@ -60,12 +72,12 @@ window.SelectorGadgetPlus = SelectorGadgetPlus = (function(window, $, SelectorGa
     }
 
     SelectorGadgetPlus.disableSelectorGadget = function() {
+        // remove custom selection
+        this.disableUpdatingCssField();
+        this.customCss = null;
+        $('.selectorgadgetplus_selected')
+            .removeClass('selectorgadgetplus_selected');
         if(this.selectorGadget) {
-            // remove custom selection
-            this.disableUpdatingCssField();
-            this.customCss = null;
-            $('.selectorgadgetplus_selected')
-                .removeClass('selectorgadgetplus_selected');
             SelectorGadget.toggle();
             this.selectorGadget = null;
         }
@@ -137,10 +149,8 @@ window.SelectorGadgetPlus = SelectorGadgetPlus = (function(window, $, SelectorGa
 
     SelectorGadgetPlus.selectCustom = function(css) {
         var self = this;
-        $('.selectorgadgetplus_selected')
-            .removeClass('selectorgadgetplus_selected');
-        this.customCss = css;
         this.disableSelectorGadget();
+        this.customCss = css;
         this.enableUpdatingCssField();
     }
 
@@ -169,11 +179,13 @@ window.SelectorGadgetPlus = SelectorGadgetPlus = (function(window, $, SelectorGa
                 width: element.width(),
                 height: element.height()
             });
-        $('html, body').scrollTop(offset.top - 100);
+        this.offsetBeforeHighlight = $('body').scrollTop();
+        $('body').scrollTop(offset.top - 100);
     }
 
     SelectorGadgetPlus.unhighlight = function() {
         this.highlightFrame.hide();
+        $('body').scrollTop(this.offsetBeforeHighlight);
     }
 
     SelectorGadgetPlus.togglePosition = function() {

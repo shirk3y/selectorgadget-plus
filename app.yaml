@@ -1,0 +1,15 @@
+application: selectorgadget-plus
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+
+- url: /
+  static_files: index.html
+  upload: index\.html
+
+- url: /(.*\.(html|gif|png|jpg|css|js))
+  static_files: \1
+  upload: (.*\.(html|gif|png|jpg|css|js))
+

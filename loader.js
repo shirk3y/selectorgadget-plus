@@ -34,17 +34,19 @@ function importCSS(href) {
   }
 }
 
+var baseUrl = window.selectorGadgetPlusOptions.baseUrl;
+
 var load = function(){
-  importCSS('http://localhost:8000/selectorgadget/selectorgadget.css');
-  importCSS('http://localhost:8000/sgplus.css');
+  importCSS(baseUrl + 'selectorgadget/selectorgadget.css');
+  importCSS(baseUrl + 'sgplus.css');
   importJS('http://ajax.googleapis.com/ajax/libs/jquery/1.3.1/jquery.min.js', function() {
     window.jQuerySG = jQuery.noConflict();
     importJS('https://dv0akt2986vzh.cloudfront.net/stable/vendor/diff/diff_match_patch.js', function() {
-      importJS('http://localhost:8000/selectorgadget/dom.js', function() {
-        importJS('http://localhost:8000/selectorgadget/core.js', function() {
-          importJS('http://localhost:8000/sgplus.js', function() {
+      importJS(baseUrl + 'selectorgadget/dom.js', function() {
+        importJS(baseUrl + 'selectorgadget/core.js', function() {
+          importJS(baseUrl + 'sgplus.js', function() {
             window.jQuerySG('.selector_gadget_loading').remove();
-            SelectorGadgetPlus.enable();
+            SelectorGadgetPlus.enable(baseUrl + 'sgplus-iframe.html');
           }) 
         });
       });
@@ -52,6 +54,4 @@ var load = function(){
   });
 };
 
-document.addEventListener('DOMContentLoaded', function() {
-    load();
-}, false);
+load();

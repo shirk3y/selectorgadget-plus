@@ -26,13 +26,15 @@ var SelectorGadgetPlusController = function($scope) {
     }
 
     $scope.select = function(field) {
-        this.disableSelectorGadget();
+        if($scope.selectingFieldIndex !== null) {
+            $scope.selectCancel($scope.fields[$scope.selectingFieldIndex]);
+        }
         $scope.selectingFieldIndex = this.$index;
         field.selecting = true;
+        field.selectingCustom = false;
         field.oldCss = field.css;
         field.oldResults = field.results;
         this.enableSelectorGadget();
-        return false;
     }
 
     $scope.selectOk = function(field) {
@@ -54,7 +56,9 @@ var SelectorGadgetPlusController = function($scope) {
     }
 
     $scope.import = function() {
-        var imported = JSON.parse(prompt('Paste your JSON'));
+        var imported = JSON.parse(prompt('Paste your JSON').replace(/\n/g, ''));
+
+        $scope.fields = [];
 
         angular.forEach(imported.selectors, function(values, name) {
             $scope.addField({

@@ -5,6 +5,8 @@
     height: 100%;
     width: 200px;
     z-index: 9999999;
+    border: 0;
+    opacity: 0.8;
 }
 
 #selectorgadgetplus.left {
@@ -15,10 +17,21 @@
 .selectorgadgetplus_highlight {
     position: absolute;
     border: 4px dotted rgb(0, 68, 204);
-    z-index: 9999998;
+    z-index: 9999997;
 }
 
 .selectorgadgetplus_selected {
   background-color: rgb(152, 176, 224) !important;
   background-image: none !important;
+}
+
+.selectorgadgetplus_overlay {
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    z-index: 9999998;
+    background: rgb(250, 167, 50);
+    display: none;
 }
