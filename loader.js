@@ -39,7 +39,7 @@ var baseUrl = window.selectorGadgetPlusOptions.baseUrl;
 var load = function(){
   importCSS(baseUrl + 'selectorgadget/selectorgadget.css');
   importCSS(baseUrl + 'sgplus.css');
-  importJS('http://ajax.googleapis.com/ajax/libs/jquery/1.3.1/jquery.min.js', function() {
+  importJS('https://ajax.googleapis.com/ajax/libs/jquery/1.3.1/jquery.min.js', function() {
     window.jQuerySG = jQuery.noConflict();
     importJS('https://dv0akt2986vzh.cloudfront.net/stable/vendor/diff/diff_match_patch.js', function() {
       importJS(baseUrl + 'selectorgadget/dom.js', function() {
